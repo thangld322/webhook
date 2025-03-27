@@ -15,8 +15,8 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB, cacheService *pkg.Cache) {
 	subscriberRepo := repository.NewSubscriber(db)
 
 	// Init controller
-	webhookController := NewWebhookController(webhookRepo)
-	subscriberController := NewSubscriberController(subscriberRepo)
+	webhookController := NewWebhookController(webhookRepo, cacheService)
+	subscriberController := NewSubscriberController(subscriberRepo, cacheService)
 
 	v1 := router.Group("/v1")
 	{

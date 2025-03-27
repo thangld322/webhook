@@ -3,9 +3,9 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"webhook/pkg"
 
 	"webhook/internal/repository"
+	"webhook/pkg"
 )
 
 type WebhookInterface interface {
@@ -13,13 +13,15 @@ type WebhookInterface interface {
 }
 
 type WebhookController struct {
-	repo   repository.WebhookInterface
-	logger *logrus.Entry
+	repo         repository.WebhookInterface
+	cacheService *pkg.Cache
+	logger       *logrus.Entry
 }
 
-func NewWebhookController(repo repository.WebhookInterface) WebhookInterface {
+func NewWebhookController(repo repository.WebhookInterface, cacheService *pkg.Cache) WebhookInterface {
 	return &WebhookController{
-		repo: repo,
+		repo:         repo,
+		cacheService: cacheService,
 		logger: pkg.Logger.WithFields(logrus.Fields{
 			"entity": "webhook",
 		}),

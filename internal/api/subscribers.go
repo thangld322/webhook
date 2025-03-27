@@ -13,13 +13,15 @@ type SubscriberInterface interface {
 }
 
 type SubscriberController struct {
-	repo   repository.SubscriberInterface
-	logger *logrus.Entry
+	repo         repository.SubscriberInterface
+	cacheService *pkg.Cache
+	logger       *logrus.Entry
 }
 
-func NewSubscriberController(repo repository.SubscriberInterface) SubscriberInterface {
+func NewSubscriberController(repo repository.SubscriberInterface, cacheService *pkg.Cache) SubscriberInterface {
 	return &SubscriberController{
-		repo: repo,
+		repo:         repo,
+		cacheService: cacheService,
 		logger: pkg.Logger.WithFields(logrus.Fields{
 			"entity": "subscriber",
 		}),

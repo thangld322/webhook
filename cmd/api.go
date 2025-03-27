@@ -6,13 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewAPICmd() *cobra.Command {
-	serveCmd := &cobra.Command{
-		Use:   "serve",
-		Short: "Run the API server",
-		RunE:  runAPICmd,
-	}
-	return serveCmd
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "Run the API server",
+	RunE:  runAPICmd,
 }
 
 func runAPICmd(cmd *cobra.Command, args []string) error {

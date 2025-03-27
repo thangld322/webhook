@@ -15,7 +15,8 @@ func NewRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: MainServiceName,
 	}
-	cmd.AddCommand(NewAPICmd())
+	cmd.AddCommand(serveCmd)
+	cmd.AddCommand(migrateCmd)
 
 	return cmd
 }
