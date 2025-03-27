@@ -13,8 +13,8 @@ const (
 	sqlHost                     = "localhost"
 	port                        = "5432"
 	user                        = "postgres"
-	sqlPassword                 = "your_password"
-	dbname                      = "your_db"
+	sqlPassword                 = "postgres"
+	dbname                      = "postgres"
 	sslmode                     = "disable"
 	timezone                    = "UTC"
 	maxOpenConns                = 100
