@@ -1,12 +1,11 @@
 package pkg
 
 import (
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"time"
-
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm/logger"
 )
 
 var Logger *logrus.Logger

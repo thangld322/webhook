@@ -4,15 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 
 	"webhook/internal/api"
 	"webhook/pkg"
@@ -45,22 +44,21 @@ func Start(ctx context.Context) error {
 		return err
 	}
 
-	// Set HTTP server mode.
-	//gin.SetMode(gin.ReleaseMode)
+	// Init kafka
+	kafkaProducer, err := pkg.NewProducer([]string{kafkaBroker})
+	if err != nil {
+		logger.WithError(err).Error("failed to init kafka client")
+		return err
+	}
 
-	// Create new HTTP router engine without standard middleware.
+	// Gin router
 	router := gin.New()
-
 	router.Use(gin.Logger())
-
-	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	router.Use(gin.Recovery())
-
-	// Cors
 	router.Use(CORSMiddleware())
 
 	// Register HTTP route handlers.
-	api.RegisterRoutes(router, orm, cacheService)
+	api.RegisterRoutes(router, orm, kafkaProducer, cacheService)
 
 	// Create new HTTP server instance.
 	server := &http.Server{

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+
 	"webhook/internal/model"
 )
 

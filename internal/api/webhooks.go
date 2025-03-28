@@ -3,8 +3,10 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"webhook/internal/model"
+	"net/http"
+	"time"
 
+	"webhook/internal/model"
 	"webhook/internal/repository"
 	"webhook/pkg"
 )
@@ -33,7 +35,22 @@ func (ctrl *WebhookController) Create(c *gin.Context) {
 	var webhook *model.Webhook
 	var err error
 	if err = c.Bind(&webhook); err != nil {
-		c.JSON(400, gin.H{"msg": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 		return
 	}
+
+	if err = webhook.GenerateID(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": err.Error()})
+		return
+	}
+	webhook.CreatedAt = time.Now()
+	webhook.UpdatedAt = webhook.CreatedAt
+
+	err = ctrl.repo.Create(webhook)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, webhook)
 }

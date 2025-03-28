@@ -2,9 +2,8 @@ package pkg
 
 import (
 	"context"
-	"time"
-
 	"github.com/go-redis/redis/v8"
+	"time"
 )
 
 type Cache struct {
@@ -42,8 +41,8 @@ func (s *Cache) Set(key string, value interface{}, expire time.Duration) (string
 	return s.RedisClient.Set(s.ctx, key, value, expire).Result()
 }
 
-func (s *Cache) Get(key string) (string, error) {
-	return s.RedisClient.Get(s.ctx, key).Result()
+func (s *Cache) Get(key string) (int64, error) {
+	return s.RedisClient.Get(s.ctx, key).Int64()
 }
 
 func (s *Cache) Del(keys ...string) (int64, error) {

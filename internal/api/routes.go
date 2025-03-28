@@ -3,11 +3,12 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
 	"webhook/internal/repository"
 	"webhook/pkg"
 )
 
-func RegisterRoutes(router *gin.Engine, db *gorm.DB, cacheService *pkg.Cache) {
+func RegisterRoutes(router *gin.Engine, db *gorm.DB, producer pkg.Producer, cacheService *pkg.Cache) {
 	router.RedirectTrailingSlash = true
 
 	// Init repo
@@ -16,7 +17,7 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB, cacheService *pkg.Cache) {
 
 	// Init controller
 	webhookController := NewWebhookController(webhookRepo, cacheService)
-	subscriberController := NewSubscriberController(subscriberRepo, cacheService)
+	subscriberController := NewSubscriberController(subscriberRepo, producer, cacheService)
 
 	v1 := router.Group("/v1")
 	{

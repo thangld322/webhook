@@ -2,6 +2,7 @@ package migration
 
 import (
 	"gorm.io/gorm"
+
 	"webhook/internal/model"
 )
 
