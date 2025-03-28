@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"webhook/internal/model"
 
 	"webhook/internal/repository"
 	"webhook/pkg"
@@ -29,4 +30,10 @@ func NewWebhookController(repo repository.WebhookInterface, cacheService *pkg.Ca
 }
 
 func (ctrl *WebhookController) Create(c *gin.Context) {
+	var webhook *model.Webhook
+	var err error
+	if err = c.Bind(&webhook); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+		return
+	}
 }

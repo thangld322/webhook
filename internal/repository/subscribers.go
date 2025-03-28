@@ -1,9 +1,12 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"webhook/internal/model"
+)
 
 type SubscriberInterface interface {
-	Create(any) error
+	Create(subscriber *model.Subscriber) error
 }
 
 type Subscriber struct {
@@ -14,7 +17,6 @@ func NewSubscriber(database *gorm.DB) SubscriberInterface {
 	return &Subscriber{db: database}
 }
 
-func (r *Subscriber) Create(_ any) error {
-
-	return nil
+func (r *Subscriber) Create(subscriber *model.Subscriber) error {
+	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Save(subscriber).Error
 }
