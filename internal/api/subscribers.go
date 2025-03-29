@@ -58,6 +58,7 @@ func (ctrl *SubscriberController) Create(c *gin.Context) {
 
 	// Create Event
 	event := model.WebhookEvent{
+		TenantID:   subscriber.TenantID,
 		EventName:  "subscriber.created",
 		EventTime:  time.Now(),
 		Subscriber: subscriber,

@@ -65,7 +65,6 @@ func (n *Notifier) allocateMessage() {
 				ev := n.consumer.Client.Poll(100)
 				switch e := ev.(type) {
 				case *kafka.Message:
-					n.logger.Printf("Received message on %s: %s\n", e.TopicPartition, string(e.Value))
 					n.jobsStream <- ev.(*kafka.Message)
 				case kafka.Error:
 					n.logger.Printf("Error: %v\n", e)
@@ -140,11 +139,19 @@ func (c *webhookWorker) execute(job *kafka.Message) error {
 			logger.WithError(err).Error("commit message error")
 		}
 	}()
+	logger.WithField("topic", job.TopicPartition).Info("received event")
 
 	var event model.WebhookEvent
 	if err := json.Unmarshal(job.Value, &event); err != nil {
 		return err
 	}
+
+	defer func() {
+		_, err := c.cacheService.Decr(fmt.Sprintf(model.TenantQueueCount, event.TenantID))
+		if err != nil {
+			logger.WithError(err).Error("update count error")
+		}
+	}()
 
 	webhooks, err := c.repo.GetByEvent(event.TenantID, event.EventName)
 	if err != nil {
