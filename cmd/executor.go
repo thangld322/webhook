@@ -44,6 +44,7 @@ func NewRootCmd() *cobra.Command {
 	}
 	cmd.AddCommand(serveCmd)
 	cmd.AddCommand(migrateCmd)
+	cmd.AddCommand(notifierCmd)
 
 	return cmd
 }

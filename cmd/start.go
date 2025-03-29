@@ -45,7 +45,7 @@ func Start(ctx context.Context) error {
 	}
 
 	// Init kafka
-	kafkaProducer, err := pkg.NewProducer([]string{kafkaBroker})
+	kafkaProducer, err := pkg.NewProducer(kafkaBroker)
 	if err != nil {
 		logger.WithError(err).Error("failed to init kafka client")
 		return err

@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/IBM/sarama"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -20,12 +19,12 @@ type SubscriberInterface interface {
 
 type SubscriberController struct {
 	repo         repository.SubscriberInterface
-	producer     pkg.Producer
+	producer     *pkg.Producer
 	cacheService *pkg.Cache
 	logger       *logrus.Entry
 }
 
-func NewSubscriberController(repo repository.SubscriberInterface, producer pkg.Producer, cacheService *pkg.Cache) SubscriberInterface {
+func NewSubscriberController(repo repository.SubscriberInterface, producer *pkg.Producer, cacheService *pkg.Cache) SubscriberInterface {
 	return &SubscriberController{
 		repo:         repo,
 		producer:     producer,
@@ -58,12 +57,12 @@ func (ctrl *SubscriberController) Create(c *gin.Context) {
 	}
 
 	// Create Event
-	event := model.SubscriberCreated{
+	event := model.WebhookEvent{
 		EventName:  "subscriber.created",
 		EventTime:  time.Now(),
 		Subscriber: subscriber,
 	}
-	eventJson, err := json.Marshal(event)
+	eventByte, err := json.Marshal(event)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": err.Error()})
 		return
@@ -91,16 +90,11 @@ func (ctrl *SubscriberController) Create(c *gin.Context) {
 		topic = fmt.Sprintf(model.TenantTopic, "common")
 	}
 
-	// Prepare the Kafka message.
-	msg := &sarama.ProducerMessage{
-		Topic: topic,
-		Value: sarama.ByteEncoder(eventJson),
-	}
-
-	// Send the message.
-	_, _, err = ctrl.producer.SendMessage(msg)
+	// Produce a message to the topic
+	err = ctrl.producer.Produce(topic, eventByte)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": err.Error()})
+		return
 	}
 
 	// Increase tenant queue count

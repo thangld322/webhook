@@ -8,7 +8,7 @@ import (
 	"webhook/pkg"
 )
 
-func RegisterRoutes(router *gin.Engine, db *gorm.DB, producer pkg.Producer, cacheService *pkg.Cache) {
+func RegisterRoutes(router *gin.Engine, db *gorm.DB, producer *pkg.Producer, cacheService *pkg.Cache) {
 	router.RedirectTrailingSlash = true
 
 	// Init repo

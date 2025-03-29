@@ -1,21 +1,35 @@
 package pkg
 
-import "github.com/IBM/sarama"
+import (
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+)
 
-type Producer sarama.SyncProducer
+type Producer struct {
+	Client *kafka.Producer
+}
 
-func NewProducer(brokers []string) (Producer, error) {
-	// Configure Sarama producer settings
-	config := sarama.NewConfig()
-	config.Producer.RequiredAcks = sarama.WaitForAll // Wait for all in-sync replicas to ack the message
-	config.Producer.Retry.Max = 5                    // Retry up to 5 times
-	config.Producer.Return.Successes = true          // Required for SyncProducer
-
-	// Create a synchronous producer
-	producer, err := sarama.NewSyncProducer(brokers, config)
+func NewProducer(bootstrapServers string) (*Producer, error) {
+	// Create a new producer using default configuration
+	producer, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": bootstrapServers,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return producer, nil
+	return &Producer{
+		producer,
+	}, nil
+}
+
+func (p *Producer) Produce(topic string, event []byte) error {
+	return p.Client.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+		Value:          event,
+	}, nil)
+}
+
+func (p *Producer) Close() {
+	p.Client.Flush(15000)
+	p.Client.Close()
 }

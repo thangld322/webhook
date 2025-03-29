@@ -2,7 +2,8 @@ package model
 
 import "time"
 
-type SubscriberCreated struct {
+type WebhookEvent struct {
+	TenantID   string      `json:"tenant_id"`
 	EventName  string      `json:"event_name"`
 	EventTime  time.Time   `json:"event_time"`
 	Subscriber *Subscriber `json:"subscriber"`
