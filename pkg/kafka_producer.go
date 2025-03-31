@@ -11,7 +11,9 @@ type Producer struct {
 func NewProducer(bootstrapServers string) (*Producer, error) {
 	// Create a new producer using default configuration
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": bootstrapServers,
+		"bootstrap.servers":                  bootstrapServers,
+		"metadata.max.age.ms":                1000,
+		"topic.metadata.refresh.interval.ms": 1000,
 	})
 	if err != nil {
 		return nil, err

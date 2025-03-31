@@ -123,7 +123,7 @@ func (c *webhookWorker) Handle() {
 				logger.WithError(err).Error("handle job error")
 			} else {
 				//logger.Info("handle job success")
-				time.Sleep(100 * time.Millisecond)
+				//time.Sleep(100 * time.Millisecond)
 			}
 		case <-c.ctx.Done():
 			logger.Info("closed consumer")

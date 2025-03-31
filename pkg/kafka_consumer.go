@@ -11,10 +11,11 @@ type Consumer struct {
 func NewConsumer(bootstrapServers string) (*Consumer, error) {
 	// Kafka configuration
 	config := &kafka.ConfigMap{
-		"bootstrap.servers":   bootstrapServers,
-		"group.id":            "webhook-notifier",
-		"auto.offset.reset":   "earliest",
-		"metadata.max.age.ms": 1000,
+		"bootstrap.servers":                  bootstrapServers,
+		"group.id":                           "webhook-notifier",
+		"auto.offset.reset":                  "earliest",
+		"metadata.max.age.ms":                1000,
+		"topic.metadata.refresh.interval.ms": 1000,
 	}
 
 	// Create a new consumer instance
