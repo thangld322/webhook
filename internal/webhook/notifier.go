@@ -48,8 +48,8 @@ func NewNotifier(ctx context.Context, repo repository.WebhookInterface, consumer
 func (n *Notifier) allocateMessage() {
 	n.logger.Info("start allocate message")
 	// Subscribe to topics matching the regex pattern
-	pattern := "^tenant-.*"
-	err := n.consumer.Client.SubscribeTopics([]string{pattern}, nil)
+	pattern := "^tenant-*"
+	err := n.consumer.Client.Subscribe(pattern, nil)
 	if err != nil {
 		n.logger.WithError(err).WithField("topic", pattern).Error("subscribe topic error")
 		return
@@ -122,7 +122,8 @@ func (c *webhookWorker) Handle() {
 			if err := c.execute(job); err != nil {
 				logger.WithError(err).Error("handle job error")
 			} else {
-				logger.Info("handle job success")
+				//logger.Info("handle job success")
+				time.Sleep(100 * time.Millisecond)
 			}
 		case <-c.ctx.Done():
 			logger.Info("closed consumer")
@@ -139,12 +140,12 @@ func (c *webhookWorker) execute(job *kafka.Message) error {
 			logger.WithError(err).Error("commit message error")
 		}
 	}()
-	logger.WithField("topic", job.TopicPartition).Info("received event")
 
 	var event model.WebhookEvent
 	if err := json.Unmarshal(job.Value, &event); err != nil {
 		return err
 	}
+	logger.WithField("tenant_id", event.TenantID).WithField("topic", job.TopicPartition).Info("received event")
 
 	defer func() {
 		_, err := c.cacheService.Decr(fmt.Sprintf(model.TenantQueueCount, event.TenantID))

@@ -6,5 +6,5 @@ var (
 )
 
 const (
-	TenantQueueThreshold = 100
+	TenantQueueThreshold = 10
 )

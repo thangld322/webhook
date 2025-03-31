@@ -49,7 +49,7 @@ func runNotifierCmd(cmd *cobra.Command, args []string) error {
 
 	s := &sync.WaitGroup{}
 
-	notifier := webhook.NewNotifier(ctx, webhookRepo, kafkaConsumer, cacheService, 1, s)
+	notifier := webhook.NewNotifier(ctx, webhookRepo, kafkaConsumer, cacheService, 2, s)
 	if err := notifier.Start(); err != nil {
 		return err
 	}
